@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <title>Carbon Footprint Quiz</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'lucida grande', Verdana, Geneva, Tahoma, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+        .image-container {
+            width: 40%;
+            background:  url('{% static "myapp/Forest4.jpeg" %}') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            opacity: .95;
+            color: rgba(250, 247, 247, 0.863);
+        }
+        .form-container {
+            width: 60%;
+            background-color: #e4e4dd; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            color: rgba(49, 48, 48, 0.7);
+            font-weight: bold;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+        .option {
+            padding: 10px;
+            background-color: #264d27dc;
+            color: rgb(236, 230, 230);
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 5px;
+            text-align: center;
+            width: 250px;
+        }
+        .option:hover {
+            background-color: #3d7c40;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        Carbon Footprint Quiz
+    </div>
+
+    <div class="form-container">
+        <!--sends data to submit_choice URL name when a button is clicked/post actioned-->
+        <form id="choiceForm" action="{% url 'myapp:submit_choice' %}" method="post">
+            {% csrf_token %}
+            <p>{{ question.question_text }}</p>
+            
+                <div class="options-container"> 
+                    {% for choice in question.quiz_choice_set.all %}
+                        <button type="button" class="option" onclick="submitChoice({{ choice.id }}, {{ question.id }}, '{{ session_id }}')">
+                            {{ choice.choice_text }}
+                        </button>
+                    {% endfor %}
+                </div>
+        
+            <!--hidden input to store the selected choice. When a form is submitted, only form inputs like <input> are sent to django--> 
+            <!-- the name here is for request.POST['choice'] -->
+            <input type="hidden" name="choice_id" id="selectedChoice">
+            <input type="hidden" name="question_id" id="selectedQuestion">
+            <input type="hidden" name="session_id" id="sessionId">
+        </form>
+    </div> 
+    <script>
+        //when the user clicks a button, JavaScript retrieves the stored choiceID here then submits the form to django
+        function submitChoice(choiceId, questionId, sessionId) {
+            document.getElementById("selectedChoice").value = Number(choiceId);  
+            document.getElementById("selectedQuestion").value = Number(questionId);
+            document.getElementById("sessionId").value = String(sessionId);
+            document.getElementById("choiceForm").submit(); 
+        }
+    </script> 
+</body>
+</html>
