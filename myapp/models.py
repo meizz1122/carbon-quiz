@@ -47,9 +47,12 @@ class Quiz_Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
-
+    
 class Quiz_User(models.Model):
     session_id = models.CharField(max_length=36, editable=False)
+
+class Quiz_Response(models.Model):
+    session_id = models.ForeignKey(Quiz_User, on_delete=models.CASCADE)
     question = models.ForeignKey(Quiz_Question, on_delete=models.CASCADE)
     choice = models.ForeignKey(Quiz_Choice, on_delete=models.CASCADE)
 

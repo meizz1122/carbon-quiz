@@ -5,7 +5,7 @@ import uuid
 from django.db.models import F
 from django.urls import reverse
 
-from .models import Question, Choice, Quiz_Question, Quiz_Choice, Quiz_User
+from .models import Question, Choice, Quiz_Question, Quiz_Choice, Quiz_User, Quiz_Response
 
 
 #A view is a “type” of web page in your Django application that generally serves a specific function and has a specific template
@@ -73,7 +73,7 @@ def quiz_submit(request):
         #save to Quiz_User model
         selected_question = get_object_or_404(Quiz_Question, pk=question_id)
         selected_choice = get_object_or_404(Quiz_Choice, pk=choice_id)
-        user = Quiz_User(session_id=session_id, question=selected_question, choice=selected_choice)
+        user = Quiz_Response(session_id=session_id, question=selected_question, choice=selected_choice)
         user.save() #TODO update for not saving same session_id (if user hits back button??)
         
         next_question = None ##TODO CHANGE THIS
