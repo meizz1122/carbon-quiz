@@ -14,25 +14,6 @@ from django.db import models
     #from myapp.models import Quiz_User
     #Quiz_User.objects.all()
 
-class Question(models.Model):
-    question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField("date published")
-
-    def __str__(self):
-        return self.question_text
-
-
-class Choice(models.Model):
-    #Django creates a set (defined as "choice_set") to hold the "other side" of a ForeignKey
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.choice_text
-
-###
-
 class Quiz_Question(models.Model):
     question_text = models.CharField(max_length=200)
 
@@ -49,12 +30,16 @@ class Quiz_Choice(models.Model):
         return self.choice_text
     
 class Quiz_User(models.Model):
-    session_id = models.CharField(max_length=36, editable=False)
+    session_id = models.CharField(primary_key=True, max_length=100, editable=False)
+
+    def __str__(self):
+        return self.session_id
 
 class Quiz_Response(models.Model):
-    session_id = models.ForeignKey(Quiz_User, on_delete=models.CASCADE)
+    # session_id = models.ForeignKey(Quiz_User, on_delete=models.CASCADE) #CHANGE THIS back to ForeignKey when not using SQLite
+    session_id = models.CharField(max_length=100)
     question = models.ForeignKey(Quiz_Question, on_delete=models.CASCADE)
     choice = models.ForeignKey(Quiz_Choice, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.session_id
+        return f" Choice: {self.choice.choice_text}"

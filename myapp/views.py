@@ -5,8 +5,7 @@ import uuid
 from django.db.models import F
 from django.urls import reverse
 
-from .models import Question, Choice, Quiz_Question, Quiz_Choice, Quiz_User, Quiz_Response
-
+from .models import Quiz_Question, Quiz_Choice, Quiz_User, Quiz_Response
 
 #A view is a “type” of web page in your Django application that generally serves a specific function and has a specific template
 #views return HttpResponse
@@ -17,32 +16,13 @@ from .models import Question, Choice, Quiz_Question, Quiz_Choice, Quiz_User, Qui
 #or “URLconf” for short. These URL configurations are defined inside each Django app, and they are Python files named urls.py.
 #A URLconf maps URL patterns to views. To get from a URL to a view, Django uses what are known as ‘URLconfs’. A URLconf maps URL patterns to views
 
-# Create your views here.
-
 #The render() function takes the request object as its first argument, 
 #a template name as its second argument and a dictionary as its optional third argument. It returns an HttpResponse object of the given template rendered with the given context.
-# def index(request):
-#     latest_question_list = Question.objects.order_by("-pub_date")[:5]
-#     context = {"latest_question_list": latest_question_list}
-#     return render(request, "myapp/index.html", context)
-
-# def detail(request, question_id):
-#     question = get_object_or_404(Question, pk=question_id)
-#     return render(request, "myapp/detail.html", {"question": question})
-
-
-# def results(request, question_id):
-#     response = "You're looking at the results of question %s."
-#     return HttpResponse(response % question_id)
-
-
-# def vote(request, question_id):
-#     return HttpResponse("You're voting on question %s." % question_id)
-
-####
 
 #view to load question and choices then submits the choice through POST
 def quiz_view(request, question_id=None):
+    # if request.session.get('session_id') == None:
+    #generate own sessionid and instead of having users type in login info
     if 'session_id' not in request.session:
         request.session['session_id'] = str(uuid.uuid4())  
     session_id = request.session['session_id']
@@ -70,11 +50,21 @@ def quiz_submit(request):
 
         print(f"Received: choice_id={choice_id}, question_id={question_id}, session_id={session_id}")  #debugging in terminal output
         
-        #save to Quiz_User model
+        #save to models
+        user, created = Quiz_User.objects.get_or_create(session_id=session_id)
+        if created:
+            user.save()
+        
+        else:
+            user = Quiz_User.objects.get(session_id=session_id)
+
+        print(f"User: {user.session_id}; Exists: {Quiz_User.objects.filter(session_id=session_id).exists()}; PK: {user.pk}")
+
         selected_question = get_object_or_404(Quiz_Question, pk=question_id)
         selected_choice = get_object_or_404(Quiz_Choice, pk=choice_id)
-        user = Quiz_Response(session_id=session_id, question=selected_question, choice=selected_choice)
-        user.save() #TODO update for not saving same session_id (if user hits back button??)
+        print(f"Saving Response with user: {user}, question: {selected_question}, choice: {selected_choice}")
+        response = Quiz_Response(session_id=user, question=selected_question, choice=selected_choice)
+        response.save() 
         
         next_question = None ##TODO CHANGE THIS
         if next_question:
@@ -86,6 +76,5 @@ def quiz_submit(request):
     #reverse() returns the URL from the URL name specified
     return HttpResponseRedirect(reverse('myapp:quiz'))
 
-def quiz_thanks(request):
+def quiz_thanks(request):   
     return render(request, "myapp/quiz_thanks.html")
-
