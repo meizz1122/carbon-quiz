@@ -48,7 +48,7 @@ def quiz_submit(request):
         question_id = request.POST.get('question_id')
         session_id = request.POST.get('session_id')
 
-        print(f"Received: choice_id={choice_id}, question_id={question_id}, session_id={session_id}")  #debugging in terminal output
+        # print(f"Received: choice_id={choice_id}, question_id={question_id}, session_id={session_id}")  #debugging in terminal output
         
         #save to models
         user, created = Quiz_User.objects.get_or_create(session_id=session_id)
@@ -58,15 +58,16 @@ def quiz_submit(request):
         else:
             user = Quiz_User.objects.get(session_id=session_id)
 
-        print(f"User: {user.session_id}; Exists: {Quiz_User.objects.filter(session_id=session_id).exists()}; PK: {user.pk}")
+        # print(f"User: {user.session_id}; Exists: {Quiz_User.objects.filter(session_id=session_id).exists()}; PK: {user.pk}")
 
         selected_question = get_object_or_404(Quiz_Question, pk=question_id)
         selected_choice = get_object_or_404(Quiz_Choice, pk=choice_id)
-        print(f"Saving Response with user: {user}, question: {selected_question}, choice: {selected_choice}")
+        # print(f"Saving Response with user: {user}, question: {selected_question}, choice: {selected_choice}")
         response = Quiz_Response(session_id=user, question=selected_question, choice=selected_choice)
         response.save() 
         
-        next_question = None ##TODO CHANGE THIS
+        #id__gt is id greater than
+        next_question =  Quiz_Question.objects.filter(id__gt=question_id).first()
         if next_question:
             return redirect('myapp:quiz', question_id=next_question.id)  
         else:
