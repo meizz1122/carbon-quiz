@@ -5,3 +5,5 @@ db.sqlite3
 .env
 env/
 *.log
+pw.txt
+ml_models/
