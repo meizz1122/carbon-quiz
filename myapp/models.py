@@ -38,12 +38,13 @@ class Quiz_Choice(models.Model):
 class Quiz_User(models.Model):
     session_id = models.CharField(primary_key=True, max_length=100, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    cluster_label = models.IntegerField(default=-1)
 
     def __str__(self):
-        return f" ID: {self.session_id}"
+        return self.session_id
 
 class Quiz_Response(models.Model):
-    session_id = models.ForeignKey(Quiz_User, on_delete=models.CASCADE) #TODO CHANGE THIS back to ForeignKey when not using SQLite
+    session_id = models.ForeignKey(Quiz_User, on_delete=models.CASCADE) 
     # session_id = models.CharField(max_length=100)
     question = models.ForeignKey(Quiz_Question, on_delete=models.CASCADE) #these are ids stored
     choice = models.ForeignKey(Quiz_Choice, on_delete=models.CASCADE)
