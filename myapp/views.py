@@ -70,13 +70,15 @@ def quiz_submit(request):
         #id__gt is id greater than
         next_question =  Quiz_Question.objects.filter(id__gt=question_id).first()
         if next_question:
+            #use redirect() it's simpler takes more options
             return redirect('myapp:quiz', question_id=next_question.id)  
         else:
+            #HttpResponseRedirect only takes the URL to which the user will be redirected. should always be used with POST; changes URL/view
+            #reverse() returns the URL from the URL name specified
             return HttpResponseRedirect(reverse('myapp:quiz_thanks')) 
      
-    #HttpResponseRedirect takes a single argument: the URL to which the user will be redirected. should always be used with POST
-    #reverse() returns the URL from the URL name specified
-    return HttpResponseRedirect(reverse('myapp:quiz'))
+    return HttpResponseRedirect(reverse('myapp:quiz_thanks'))   
 
-def quiz_thanks(request):   
-    return render(request, "myapp/quiz_thanks.html")
+def quiz_thanks(request, session_id=None):   
+    session_id = request.session['session_id']
+    return render(request, "myapp/quiz_thanks.html", {'session_id':session_id})

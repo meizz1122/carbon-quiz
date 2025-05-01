@@ -39,6 +39,7 @@ class Quiz_User(models.Model):
     session_id = models.CharField(primary_key=True, max_length=100, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     cluster_label = models.IntegerField(default=-1)
+    total_emission = models.FloatField(default=-1.0)
 
     def __str__(self):
         return self.session_id
