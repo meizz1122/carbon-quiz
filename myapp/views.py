@@ -6,6 +6,7 @@ from django.db.models import F
 from django.urls import reverse
 
 from .models import Quiz_Question, Quiz_Choice, Quiz_User, Quiz_Response
+from myapp.scripts.cluster_input import ClusteringModelManager
 
 #A view is a “type” of web page in your Django application that generally serves a specific function and has a specific template
 #views return HttpResponse
@@ -48,7 +49,7 @@ def quiz_submit(request):
         question_id = request.POST.get('question_id')
         session_id = request.POST.get('session_id')
 
-        print(f"Received: choice_id={choice_id}, question_id={question_id}, session_id={session_id}")  #debugging in terminal output
+        # print(f"Received: choice_id={choice_id}, question_id={question_id}, session_id={session_id}")  #debugging in terminal output
         
         #save to models
         user, created = Quiz_User.objects.get_or_create(session_id=session_id)
@@ -58,12 +59,12 @@ def quiz_submit(request):
         else:
             user = Quiz_User.objects.get(session_id=session_id)
 
-        print(f"User: {user.session_id}; Exists: {Quiz_User.objects.filter(session_id=session_id).exists()}; PK: {user.pk}")
+        # print(f"User: {user.session_id}; Exists: {Quiz_User.objects.filter(session_id=session_id).exists()}; PK: {user.pk}")
 
         selected_question = get_object_or_404(Quiz_Question, pk=question_id)
         selected_choice = get_object_or_404(Quiz_Choice, pk=choice_id)
         
-        print(f"Saving Response with user: {user}, question: {selected_question}, choice: {selected_choice}")
+        # print(f"Saving Response with user: {user}, question: {selected_question}, choice: {selected_choice}")
         response = Quiz_Response(session_id=user, question=selected_question, choice=selected_choice)
         response.save() 
         
@@ -81,4 +82,10 @@ def quiz_submit(request):
 
 def quiz_thanks(request, session_id=None):   
     session_id = request.session['session_id']
-    return render(request, "myapp/quiz_thanks.html", {'session_id':session_id})
+
+    #TODO call functions to get total emission, cluster, heatmap; pass results to template
+    my_cluster = ClusteringModelManager()
+    total_em = my_cluster.get_emission(session_id=session_id)
+    user_cluster = my_cluster.get_cluster(session_id=session_id)
+
+    return render(request, "myapp/quiz_thanks.html", {'total_emission':total_em, 'user_cluster': user_cluster})

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
     <title>Thanks</title>
     <style>
         .body {
@@ -20,7 +21,10 @@
 </head>
 <body>
     <div class="thanks-message">
-        Hi {{ session_id }}
-        Thanks for submitting!
+        <p>Thanks for submitting!</p>
+        <p> Your Yearly Estimated CO2e: {{total_emission}} kg </p>
+        <p> Your Predicted Cluster: {{user_cluster}} </p>
+        <p> Cluster Heatmap: </p>
+        <img src="{% static 'myapp/heatmap.png' %}" alt="Heatmap">
     </div>
 </body>
