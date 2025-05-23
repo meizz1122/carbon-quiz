@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
+    {% load humanize %}
     <title>Thanks</title>
     <style>
         .body {
             margin: 0;
-            font-family: 'lucida grande', Verdana, Geneva, Tahoma, sans-serif;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
             display: flex;
             height: 100vh;
         }
@@ -19,10 +20,10 @@
         }
     </style>
 </head>
-<body>
+<body style="background-color:white;">
     <div class="thanks-message">
-        <p>Thanks for submitting!</p>
-        <p> Your Yearly Estimated CO2e: {{total_emission}} kg </p>
+        <h2>Thanks for submitting!</h2>
+        <p> Your Yearly Estimated Greenhouse Gas Emissions: {{total_emission | intcomma}} kg CO<sub>2</sub>-equivalent</p>
         <p> Your Predicted Cluster: {{user_cluster}} </p>
         <p> Cluster Heatmap: </p>
         <img src="{% static 'myapp/heatmap.png' %}" alt="Heatmap">
