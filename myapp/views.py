@@ -31,7 +31,7 @@ def quiz_view(request, question_id=None):
     
     #question_id comes from URL or is None if first question
     if question_id is None:
-        question = Quiz_Question.objects.first()  #start with the first question
+        question = Quiz_Question.objects.get(order=1)  #start with the first question
     else:
         question = get_object_or_404(Quiz_Question, pk=question_id)
 
@@ -69,7 +69,8 @@ def quiz_submit(request):
         response.save() 
         
         #id__gt is id greater than
-        next_question =  Quiz_Question.objects.filter(id__gt=question_id).first()
+        current_order = getattr(selected_question, 'order')
+        next_question =  Quiz_Question.objects.filter(order=current_order+1).first() #next question logic
         if next_question:
             #use redirect() it's simpler takes more options
             return redirect('myapp:quiz', question_id=next_question.id)  

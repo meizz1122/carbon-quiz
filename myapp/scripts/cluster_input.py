@@ -59,11 +59,11 @@ class ClusteringModelManager:
         df = pd.pivot(df, index='session_id', columns='question_short_name', values='emission')
         return df
     
-
+    #NOTE only for individual user data, loads previously created minmaxscaler from train_model()
     def preprocess_data(self, df):
         #preprocess: remove session_id as first column, normalize
         df = pd.DataFrame(df)
-        df = df.drop(columns=['car_type'])
+        df = df.drop(columns=['car_type','age','location']) #NOTE update here and in train_model()
         df_input = df.reset_index(drop=True)
         
         with open(self.MinMaxScaler_path, 'rb') as file:
@@ -76,15 +76,16 @@ class ClusteringModelManager:
 
     #train and save model locally, storing user labels back to Quiz_User
     def train_model(self):
-        #preprocess: remove session_id as first column, normalize
-        #TODO combine with preprocess method?! NO for now since need session_ids/index to store info
+        #preprocess
         df = self.get_cluster_data()
         df = pd.DataFrame(df)
-        df = df.drop(columns=['car_type'])
+        df = df.drop(columns=['car_type','age','location']) #NOTE update here and in preprocess_data()
 
+        #total by session_id
         total = df.sum(axis=1)
 
-        df_input = df.reset_index(drop=True)
+        #create and save scaler
+        df_input = df.reset_index(drop=True) #drop session_ids now
         mmscaler = MinMaxScaler()
         df_input = mmscaler.fit_transform(df_input)
         with open(self.MinMaxScaler_path,'wb') as file:
@@ -98,19 +99,20 @@ class ClusteringModelManager:
         df['total_emission'] = total
         # print(df.head)
 
-        # save labels to Quiz_User model; TODO apparently iterrows() is very slow..suggestion later to use bulk_update
-        for index, row in df.iterrows():
-            try:
-                # print(df.columns.tolist())
-                # print(df.index.name)
-                print()
-                user = Quiz_User.objects.get(pk=row.name)
-                user.cluster_label = int(row['cluster_label'])
-                user.total_emission = round(row['total_emission'])
-                user.save()
-                print(f"User {row.name} found and updated")
-            except Quiz_User.DoesNotExist:
-                print(f"User {row.name} not found.")
+        # # NOT necessary?? save labels to Quiz_User model; 
+        # # TODO apparently iterrows() is very slow..suggestion later to use bulk_update
+        # for index, row in df.iterrows():
+        #     try:
+        #         # print(df.columns.tolist())
+        #         # print(df.index.name)
+        #         print()
+        #         user = Quiz_User.objects.get(pk=row.name)
+        #         user.cluster_label = int(row['cluster_label'])
+        #         user.total_emission = round(row['total_emission'])
+        #         user.save()
+        #         print(f"User {row.name} found and updated")
+        #     except Quiz_User.DoesNotExist:
+        #         print(f"User {row.name} not found.")
         
         #save ml model locally for loading in view later
         filename = self.model_path
