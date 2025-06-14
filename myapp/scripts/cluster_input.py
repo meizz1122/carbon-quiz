@@ -15,13 +15,13 @@ class ClusteringModelManager:
     def __init__(self):
         #TODO post deployment (GCP, Heroku etc) use self.model_path = os.path.join(settings.BASE_DIR, 'scripts', 'saved_model.pkl')
         self.model_path = 'myapp/ml_models/cluster_model.pkl' # static path
-        self.heatmap_path = 'myapp/static/myapp/heatmap.png'
-        self.MinMaxScaler_path = 'myapp/ml_models/mmscaler.pkl'
+        self.heatmap_path = 'myapp/static/myapp/heatmap.png' # static path
+        self.MinMaxScaler_path = 'myapp/ml_models/mmscaler.pkl' # static path
         self.model = None
         self.cluster_labels = None
         self.df = None
 
-    #preprocess input data for model, retrieve user data from database
+    #preprocess input data for model, retrieve all responses in database and pivot into one column per feature 
     #don't need self for static functions vs instance method
     def get_cluster_data(self):
         responses = Quiz_Response.objects.select_related('session_id', 'question', 'choice')
@@ -41,6 +41,7 @@ class ClusteringModelManager:
 
         return df_pivot
 
+    #retrieve single user data
     def get_user_data(self, session_id):
         # retrieve choices, sum, save to model?, return
         responses = Quiz_Response.objects.filter(session_id=session_id).select_related('session_id', 'question', 'choice')
@@ -59,7 +60,7 @@ class ClusteringModelManager:
         df = pd.pivot(df, index='session_id', columns='question_short_name', values='emission')
         return df
     
-    #NOTE only for individual user data, loads previously created minmaxscaler from train_model()
+    #NOTE only for INDIVIDUAL user data, loads previously created minmaxscaler from train_model()
     def preprocess_data(self, df):
         #preprocess: remove session_id as first column, normalize
         df = pd.DataFrame(df)

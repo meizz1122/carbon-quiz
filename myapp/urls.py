@@ -21,5 +21,6 @@ urlpatterns = [
     path('', views.quiz_view, name='quiz_index'),
     path("<int:question_id>/", views.quiz_view, name="quiz"),
     path('submit/', views.quiz_submit, name='submit_choice'),
-    path('completed/', views.quiz_thanks, name='quiz_thanks')
+    path('completed/', views.quiz_thanks, name='quiz_thanks'),
+    path('machine_learning/', views.ML_view, name='ML')
 ]

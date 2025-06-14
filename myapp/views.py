@@ -90,3 +90,6 @@ def quiz_thanks(request, session_id=None):
     user_cluster = my_cluster.get_cluster(session_id=session_id)
 
     return render(request, "myapp/quiz_thanks.html", {'total_emission':total_em, 'user_cluster': user_cluster})
+
+def ML_view(request):
+    return None
