@@ -12,6 +12,7 @@
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             display: flex;
             height: 100vh;
+            background-color:white;
         }
         .thanks-message {
             font-size: 1.5em;
@@ -20,7 +21,12 @@
         }
     </style>
 </head>
-<body style="background-color:white;">
+<body>
+    <div style="position: fixed; top: 10px; right: 20px; z-index: 1000;">
+    <a href="{% url 'myapp:about' %}" style="margin-right: 20px; color: rgba(49, 48, 48, 0.7); font-weight: bold; text-decoration: none;">About</a>
+    <a href="{% url 'myapp:machine_learning' %}" style="margin-right: 25px; color: rgba(49, 48, 48, 0.7); font-weight: bold; text-decoration: none;">Machine Learning</a>
+    </div>
+
     <div class="thanks-message">
         <h2>Thanks for submitting!</h2>
         <p> Your Yearly Estimated Greenhouse Gas Emissions: {{total_emission | intcomma}} kg CO<sub>2</sub>-equivalent</p>

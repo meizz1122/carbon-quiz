@@ -74,7 +74,7 @@ class ClusteringModelManager:
 
         return df_input
 
-
+    #TODO: keep this? what to show in results page?
     #train and save model locally, storing user labels back to Quiz_User
     def train_model(self):
         #preprocess

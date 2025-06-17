@@ -13,7 +13,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.preprocessing import MinMaxScaler
 
-## from myapp.scripts.create_training_data import create_data, silhouette, PCA_heatmap
+## from myapp.scripts.create_training_data import create_data, silhouette, PCA_heatmap, percentile
 
 weighted_choices = {
         'beef': [0.2, 0.3, 0.4, 0.1],
@@ -139,7 +139,7 @@ def PCA_heatmap(n_clusters=4):
     X['cluster_label'] = cluster_labels
 
     fig, (ax1, ax2) = plt.subplots(1,2, width_ratios=[2,1])
-    fig.set_size_inches(20, 6)
+    fig.set_size_inches(20, 7)
 
     #HEATMAP
     averages = X.groupby('cluster_label').mean()
@@ -186,9 +186,21 @@ def PCA_heatmap(n_clusters=4):
         fontweight="bold",
     )
 
+    plt.subplots_adjust(bottom=0.2) 
     plt.savefig(PCA_heatmap_path)
     # print(pca.components_)
     print(f'Explained variance Ratio: {pca.explained_variance_ratio_}')
+
+
+def percentile():
+    my_cluster = ClusteringModelManager()
+    X = my_cluster.get_cluster_data()
+    total_emissions = X.sum(axis=1)
+
+    print(total_emissions[:10])
+
+    p = [0, 25, 50, 75, 100]
+    print(np.percentile(total_emissions, p))
 
     
 

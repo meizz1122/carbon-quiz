@@ -40,6 +40,7 @@ def quiz_view(request, question_id=None):
 
     return render(request, 'myapp/quiz.html', {'question': question, 'session_id' : session_id})
 
+
 #view for django to retrieve the choice that was submitted, saves then redirects to thanks page
 #not actually rendering any html - only two webpages exist
 def quiz_submit(request):
@@ -81,6 +82,7 @@ def quiz_submit(request):
      
     return HttpResponseRedirect(reverse('myapp:quiz_thanks'))   
 
+
 def quiz_thanks(request, session_id=None):   
     session_id = request.session['session_id']
 
@@ -91,5 +93,10 @@ def quiz_thanks(request, session_id=None):
 
     return render(request, "myapp/quiz_thanks.html", {'total_emission':total_em, 'user_cluster': user_cluster})
 
+
 def ML_view(request):
-    return None
+    return render(request, "myapp/ML.html")
+
+
+def about_view(request):
+    return render(request, "myapp/about.html")

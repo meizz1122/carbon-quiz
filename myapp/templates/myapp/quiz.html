@@ -55,9 +55,31 @@
         .option:hover {
             background-color: #3d7c40;
         }
+        .top-links {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .top-links a {
+            font-family: 'lucida grande', Verdana, Geneva, Tahoma, sans-serif;
+            margin-right: 20px;
+            color: rgba(49, 48, 48, 0.7);
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .hover-underline:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
+    <div class="top-links">
+        <a href="{% url 'myapp:about' %}" class="hover-underline">About</a>
+        <a href="{% url 'myapp:machine_learning' %}" class="hover-underline">Machine Learning</a>
+    </div>
+
     <div class="image-container">
         Carbon Footprint Quiz
     </div>
