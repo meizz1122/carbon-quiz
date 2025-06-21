@@ -1,5 +1,6 @@
 from myapp.models import Quiz_Response, Quiz_Choice, Quiz_Question, Quiz_User
 import pandas as pd
+import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import MinMaxScaler, Normalizer
 import pickle
@@ -155,4 +156,3 @@ class ClusteringModelManager:
         user_cluster = loaded_model.predict(processed_data)
 
         return user_cluster[0]
-

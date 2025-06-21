@@ -19,12 +19,28 @@
             font-weight: bold;
             color: #144123af;
         }
+        .top-links {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+        }
+        .top-links a {
+            font-family: 'lucida grande', Verdana, Geneva, Tahoma, sans-serif;
+            margin-left: 20px;
+            color: rgba(49, 48, 48, 0.7);
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .hover-underline:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <div style="position: fixed; top: 10px; right: 20px; z-index: 1000;">
-    <a href="{% url 'myapp:about' %}" style="margin-right: 20px; color: rgba(49, 48, 48, 0.7); font-weight: bold; text-decoration: none;">About</a>
-    <a href="{% url 'myapp:machine_learning' %}" style="margin-right: 25px; color: rgba(49, 48, 48, 0.7); font-weight: bold; text-decoration: none;">Machine Learning</a>
+    <div class="top-links">
+        <a href="{% url 'myapp:about' %}" class="hover-underline">About</a>
+        <a href="{% url 'myapp:machine_learning' %}" class="hover-underline">Machine Learning</a>
     </div>
 
     <div class="thanks-message">
