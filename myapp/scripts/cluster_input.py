@@ -1,9 +1,14 @@
+##**User cluster results related methods**##
+
 from myapp.models import Quiz_Response, Quiz_Choice, Quiz_Question, Quiz_User
 import pandas as pd
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import MinMaxScaler, Normalizer
 import pickle
+
+import matplotlib
+matplotlib.use('Agg')
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -21,6 +26,7 @@ class ClusteringModelManager:
         self.model = None
         self.cluster_labels = None
         self.df = None
+        self.columns_to_drop = ['car_type','age','location']
 
     #preprocess input data for model, retrieve all responses in database and pivot into one column per feature 
     #don't need self for static functions vs instance method
@@ -62,10 +68,10 @@ class ClusteringModelManager:
         return df
     
     #NOTE only for INDIVIDUAL user data, loads previously created minmaxscaler from train_model()
-    def preprocess_data(self, df):
+    def preprocess_user_data(self, df):
         #preprocess: remove session_id as first column, normalize
         df = pd.DataFrame(df)
-        df = df.drop(columns=['car_type','age','location']) #NOTE update here and in train_model()
+        df = df.drop(columns=self.columns_to_drop) 
         df_input = df.reset_index(drop=True)
         
         with open(self.MinMaxScaler_path, 'rb') as file:
@@ -81,7 +87,7 @@ class ClusteringModelManager:
         #preprocess
         df = self.get_cluster_data()
         df = pd.DataFrame(df)
-        df = df.drop(columns=['car_type','age','location']) #NOTE update here and in preprocess_data()
+        df = df.drop(columns=self.columns_to_drop) 
 
         #total by session_id
         total = df.sum(axis=1)
@@ -126,32 +132,34 @@ class ClusteringModelManager:
         averages = df.groupby('cluster_label').mean()
         # print(averages)
         averages_scaled = MinMaxScaler().fit_transform(averages)
+        plt.figure(figsize=(11, 6))
         sns.heatmap(averages_scaled, annot=True, xticklabels=averages.columns.tolist() ,cmap='GnBu')
         plt.xticks(rotation=45)
         plt.xlabel("Feature")
         plt.ylabel("Cluster")
-        plt.rcParams["figure.figsize"] = (6,11)
+        # plt.rcParams["figure.figsize"] = (6,13)
         plt.subplots_adjust(bottom=0.3) 
         # plt.show()
         plt.savefig(self.heatmap_path)
+        plt.close()
 
 
     #not necessary to calc total emission during model training?! only need to calc/retrieve the current active user
-    def get_emission(self, session_id):
+    def get_user_emission(self, session_id):
         df = self.get_user_data(session_id=session_id)
-        df = df.drop(columns=['car_type'])
+        df = df.drop(columns=self.columns_to_drop)
         sum = df.sum(axis=1).iloc[0]
         return round(sum)
 
 
-    def get_cluster(self, session_id):
+    def get_user_cluster(self, session_id):
         # load, predict, save to model? return
         filename = self.model_path
         with open(filename, 'rb') as file:
             loaded_model = pickle.load(file)
 
         user_data = self.get_user_data(session_id=session_id)
-        processed_data = self.preprocess_data(df=user_data)
+        processed_data = self.preprocess_user_data(df=user_data)
 
         user_cluster = loaded_model.predict(processed_data)
 

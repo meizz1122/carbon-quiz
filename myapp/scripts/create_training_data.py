@@ -1,3 +1,5 @@
+##**Machine Learning page related functions**##
+
 from myapp.models import Quiz_Response, Quiz_Choice, Quiz_Question, Quiz_User
 from myapp.scripts.cluster_input import ClusteringModelManager
 import pandas as pd
@@ -5,8 +7,9 @@ import numpy as np
 import uuid
 import random
 from sklearn.decomposition import PCA
-from scipy import stats
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.cm as cm
@@ -35,7 +38,8 @@ range_n_clusters = [2, 3, 4, 5, 6]
 
 silhouette_paths = 'myapp/static/myapp/silhouette'
 PCA_heatmap_path = 'myapp/static/myapp/PCA_heatmap.png'
-percentile_path = 'myapp/static/myapp/percentile.png'
+
+columns_to_drop = ['car_type','age','location']
 
 
 #create training data
@@ -62,7 +66,7 @@ def silhouette():
     X = my_cluster.get_cluster_data()
 
     X = pd.DataFrame(X)
-    X = X.drop(columns=['car_type','age','location']) 
+    X = X.drop(columns=columns_to_drop) 
     X = X.reset_index(drop=True) 
     mmscaler = MinMaxScaler()
     X = mmscaler.fit_transform(X)
@@ -133,7 +137,7 @@ def PCA_heatmap(n_clusters=4):
     X = my_cluster.get_cluster_data()
 
     X = pd.DataFrame(X)
-    X = X.drop(columns=['car_type','age','location']) 
+    X = X.drop(columns=columns_to_drop) 
     X = X.reset_index(drop=True) 
     mmscaler = MinMaxScaler()
     X_input = mmscaler.fit_transform(X)
@@ -194,59 +198,6 @@ def PCA_heatmap(n_clusters=4):
     plt.savefig(PCA_heatmap_path)
     # print(pca.components_)
     print(f'Explained variance Ratio: {pca.explained_variance_ratio_}')
-
-
-def percentile_grade(session_id=None):
-    my_cluster = ClusteringModelManager()
-    
-    #group data
-    X = my_cluster.get_cluster_data()
-    total_emissions = X.sum(axis=1)
-    p = [0, 25, 50, 75, 100]
-    percentiles = np.percentile(total_emissions, p)
-
-    #user specific data
-    user_data = my_cluster.get_user_data(session_id=session_id)
-    user_total_emissions = user_data.sum(axis=1).values
-    user_percentile = stats.percentileofscore(a=total_emissions,score=user_total_emissions)
-    
-    grades = ['Fantastic', 'Great', 'Good', 'OK']
-    user_grade = ''
-    for i, percentile_value in enumerate(percentiles[1:]):
-        if user_total_emissions <= percentile_value:
-            user_grade = grades[i]
-            break
-
-    #create chart
-    fig, ax = plt.subplots(figsize=(8, 4))
-
-    widths = [percentiles[i+1] - percentiles[i] for i in range(len(percentiles)-1)]  
-    colors = ["#52d284", "#9fde84", "#feb05a", "#fa5e46"]  
-
-    left = percentiles[0]
-    for width, color in zip(widths, colors):
-        ax.barh(y=0, width=width, left=left, height=0.5, color=color, edgecolor=None)
-        left += width
-
-    ax.axvline(x=percentiles[2], color="#343434", linestyle="--")
-    ax.text(x=percentiles[2],y=-0.33, s='Median', ha='center', fontfamily='Verdana', color='#343434', fontsize=12)
-
-    ax.axvline(x=user_total_emissions, color="black", linestyle="--", linewidth=2.5)
-    ax.text(x=user_total_emissions,y=-0.33, s='You', ha='center', fontfamily='Verdana', color='black', fontweight='bold', fontsize=12)
-
-    ax.text(x=percentiles[0],y=-0.26, s='Low Impact', ha='left', va='top', fontfamily='Verdana', color='#52d284', fontweight='light', fontsize=10)
-    ax.text(x=percentiles[-1],y=-0.26, s='High Impact', ha='right',va='top', fontfamily='Verdana', color='#fa5e46', fontweight='light', fontsize=10)
-
-    ax.set_title("Your Total Emissions Compared to Population Quartiles", fontsize=14, color='#343434')
-    ax.set_xlim(0, percentiles[-1])
-    ax.axis('off')
-
-
-    plt.subplots_adjust(bottom=0.3) 
-    plt.savefig(percentile_path)
-
-    return user_percentile, user_grade
-
 
     
 

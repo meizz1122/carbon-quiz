@@ -7,6 +7,7 @@ from django.urls import reverse
 
 from .models import Quiz_Question, Quiz_Choice, Quiz_User, Quiz_Response
 from myapp.scripts.cluster_input import ClusteringModelManager
+import myapp.scripts.results_page as rp
 
 #A view is a “type” of web page in your Django application that generally serves a specific function and has a specific template
 #views return HttpResponse
@@ -86,12 +87,19 @@ def quiz_submit(request):
 def quiz_thanks(request, session_id=None):   
     session_id = request.session['session_id']
 
-    #TODO call functions to get total emission, cluster, heatmap; pass results to template
-    my_cluster = ClusteringModelManager()
-    total_em = my_cluster.get_emission(session_id=session_id)
-    user_cluster = my_cluster.get_cluster(session_id=session_id)
+    # my_cluster = ClusteringModelManager()
+    # total_em = my_cluster.get_user_emission(session_id=session_id)
+    # user_cluster = my_cluster.get_user_cluster(session_id=session_id)
 
-    return render(request, "myapp/quiz_thanks.html", {'total_emission':total_em, 'user_cluster': user_cluster})
+    # return render(request, "myapp/quiz_thanks.html", {'total_emission':total_em, 'user_cluster': user_cluster})
+
+    user_percentile, user_grade = rp.generate_percentile_grade(session_id=session_id)
+    user_percentile = int(100 - user_percentile)
+
+    rp.generate_similar_subgroup(session_id=session_id)
+
+    return render(request, "myapp/quiz_thanks.html", {'user_percentile': user_percentile, 'user_grade': user_grade})
+
 
 
 def ML_view(request):

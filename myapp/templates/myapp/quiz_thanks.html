@@ -44,10 +44,15 @@
     </div>
 
     <div class="thanks-message">
-        <h2>Thanks for submitting!</h2>
-        <p> Your Yearly Estimated Greenhouse Gas Emissions: {{total_emission | intcomma}} kg CO<sub>2</sub>-equivalent</p>
+        <h1>Thanks for submitting!</h1>
+        <!-- <p> Your Yearly Estimated Greenhouse Gas Emissions: {{total_emission | intcomma}} kg CO<sub>2</sub>-equivalent</p> -->
+        <img src="{% static 'myapp/percentile.png' %}" alt="Percentile">
+        <img src="{% static 'myapp/subgroups.png' %}" alt="Subgroups">
+        <!-- <p></p>
         <p> Your Predicted Cluster: {{user_cluster}} </p>
         <p> Cluster Heatmap: </p>
-        <img src="{% static 'myapp/heatmap.png' %}" alt="Heatmap">
+        <img src="{% static 'myapp/heatmap.png' %}" alt="Heatmap"> -->
+        <h2>Recommended actions for you:</h2>
+        <h2>Your predicted cluster (beta):</h2>
     </div>
 </body>
