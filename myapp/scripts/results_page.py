@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 percentile_path = 'myapp/static/myapp/percentile.png'
 subgroups_path = 'myapp/static/myapp/subgroups.png'
+user_top5_path = 'myapp/static/myapp/top5.png'
 columns_to_drop = ['car_type','age','location']
 
 
@@ -80,61 +81,80 @@ def generate_similar_subgroup(session_id=None):
     user_data = user_data.reset_index(drop=True) 
     user_emission = my_cluster.get_user_emission(session_id=session_id)
 
-    print(user_emission)
+    #user group
+    user_age = user_data.loc[0, 'age']
+    user_geo = user_data.loc[0 ,'location']
+
+    #group averages
+    age_avg_data = X.drop(columns=['car_type', 'location'])
+    age_mask = age_avg_data['age'] == user_age
+    age_avg = age_avg_data[age_mask].sum(axis=1).mean()
+
+    geo_avg_data = X.drop(columns=['car_type', 'age'])
+    geo_mask = geo_avg_data['location'] == user_geo
+    geo_avg = geo_avg_data[geo_mask].sum(axis=1).mean()
+
+    age_diff = f"{ceil((user_emission - age_avg)/age_avg *100):+}%"
+    geo_diff = f"{ceil((user_emission - geo_avg)/geo_avg *100):+}%"
+
+    #charting
+    labels = ['Age \n Group', 'Location/ \n Geography']
+    chart_data = {
+    'You': (user_emission, user_emission),
+    'Group Avg': (int(age_avg), int(geo_avg))
+    }
+    bar_colors = ["#45b5c3", "#D3D3D3"]
+    bar_labels = [[f'You ({age_diff})', f'You ({geo_diff})'], [' Group \n Avg',' Group \n Avg']]
+    bar_label_weights = ['bold', 'normal']
+
+    x = np.array([0, 0.8])  # the label locations
+    width = 0.25  # the width of the bars
+    multiplier = 0
+
+    fig, ax = plt.subplots()
+
+    for i, key in enumerate(chart_data):
+        offset = width * multiplier
+        rects = ax.barh(x + offset, chart_data.get(key), width, label=key, color=bar_colors[i])
+        ax.bar_label(rects, labels=bar_labels[i], color='#343434', weight=bar_label_weights[i])
+        multiplier += 1
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_yticks(x + width - 0.125, labels, color='#343434')
+    ax.set_xticks([])
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False) 
+    # ax.spines['left'].set_visible(False)
+    plt.subplots_adjust(top=0.75, left=0.2) 
+
+    plt.figtext(0.05, 0.9, s=f"Here's how you ", fontfamily='Verdana', color='#343434', fontweight='normal', fontsize=18)
+    plt.figtext(0.37, 0.9, s=f"compare", fontfamily='Verdana', color='#45b5c3', fontweight='bold', fontsize=19)
+    plt.figtext(0.05, 0.83, s=f"Within similar subgroups", fontfamily='Verdana', color='#343434', fontweight='normal', fontsize=12)
+
+    plt.savefig(subgroups_path)
+    plt.close()
+
+
+def generate_user_categories(session_id=None):
+    my_cluster = ClusteringModelManager()
+    user_data = my_cluster.get_user_data(session_id=session_id)
+    user_data = user_data.drop(columns=columns_to_drop) 
+    user_data = user_data.reset_index(drop=True) 
+
+    row1 = user_data.iloc[0]
+    row1 = row1.sort_values(ascending=False)
+    top_5 = row1[:5]
+    top_5['other'] = row1[5:].sum()
     
-    # #user group
-    # user_age = user_data.loc[0, 'age']
-    # user_geo = user_data.loc[0 ,'location']
+    colors = [ '#FEAE65', '#E6F69D', '#AADEA7', '#64C2A6', '#2D87BB', "#D3D3D3"]
 
-    # #group averages
-    # age_avg_data = X.drop(columns=['car_type', 'location'])
-    # age_mask = age_avg_data['age'] == user_age
-    # age_avg = age_avg_data[age_mask].sum(axis=1).mean()
-
-    # geo_avg_data = X.drop(columns=['car_type', 'age'])
-    # geo_mask = geo_avg_data['location'] == user_geo
-    # geo_avg = geo_avg_data[geo_mask].sum(axis=1).mean()
-
-    # age_diff = f"{ceil((user_emission - age_avg)/age_avg *100):+}%"
-    # geo_diff = f"{ceil((user_emission - geo_avg)/geo_avg *100):+}%"
-
-    # #charting
-    # labels = ['Age \n Group', 'Location/ \n Geography']
-    # chart_data = {
-    # 'You': (user_emission, user_emission),
-    # 'Group Avg': (int(age_avg), int(geo_avg))
-    # }
-    # bar_colors = ["#45b5c3", "#D3D3D3"]
-    # bar_labels = [[f'You ({age_diff})', f'You ({geo_diff})'], [' Group \n Avg',' Group \n Avg']]
-    # bar_label_weights = ['bold', 'normal']
-
-    # x = np.array([0, 0.8])  # the label locations
-    # width = 0.25  # the width of the bars
-    # multiplier = 0
-
-    # fig, ax = plt.subplots()
-
-    # for i, key in enumerate(chart_data):
-    #     offset = width * multiplier
-    #     rects = ax.barh(x + offset, chart_data.get(key), width, label=key, color=bar_colors[i])
-    #     ax.bar_label(rects, labels=bar_labels[i], color='#343434', weight=bar_label_weights[i])
-    #     multiplier += 1
-
-    # # Add some text for labels, title and custom x-axis tick labels, etc.
-    # ax.set_yticks(x + width - 0.125, labels, color='#343434')
-    # ax.set_xticks([])
-    # ax.spines['top'].set_visible(False)
-    # ax.spines['right'].set_visible(False)
-    # ax.spines['bottom'].set_visible(False) 
-    # # ax.spines['left'].set_visible(False)
-    # plt.subplots_adjust(top=0.75, left=0.2) 
-
-    # plt.figtext(0.05, 0.9, s=f"Here's how you ", fontfamily='Verdana', color='#343434', fontweight='normal', fontsize=18)
-    # plt.figtext(0.37, 0.9, s=f"compare", fontfamily='Verdana', color='#45b5c3', fontweight='bold', fontsize=19)
-    # plt.figtext(0.05, 0.83, s=f"Within similar subgroups", fontfamily='Verdana', color='#343434', fontweight='normal', fontsize=12)
-
-    # plt.savefig(subgroups_path)
-    # plt.close()
+    fig, ax = plt.subplots(figsize=(5.5, 4))
+    ax.pie(top_5, labels=top_5.index.tolist(), autopct='%1.0f%%', colors=colors, textprops={'color': '#343434', 'fontfamily':'Verdana'})
+    ax.set_title('Your top 5 categories with the most impact', fontfamily='Verdana', color='#343434', ha='center', fontsize=15, fontweight='bold')
+    plt.subplots_adjust(bottom=0.02, left=0.1) 
+    plt.savefig(user_top5_path)
+    plt.close()
 
 
 def recommended_actions():
