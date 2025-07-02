@@ -147,15 +147,15 @@ def generate_user_categories(session_id=None):
     top_5 = row1[:5]
     top_5['other'] = row1[5:].sum()
     
-    colors = [ '#FEAE65', '#E6F69D', '#AADEA7', '#64C2A6', '#2D87BB', "#D3D3D3"]
+    colors = ['#F66D44', '#FEAE65', '#E6F69D', '#AADEA7', '#64C2A6', '#2D87BB']
 
     fig, ax = plt.subplots(figsize=(5.5, 4))
     ax.pie(top_5, labels=top_5.index.tolist(), autopct='%1.0f%%', colors=colors, textprops={'color': '#343434', 'fontfamily':'Verdana'})
-    ax.set_title('Your top 5 categories with the most impact', fontfamily='Verdana', color='#343434', ha='center', fontsize=15, fontweight='bold')
+    ax.set_title('Your top 5 categories with the most impact', fontfamily='Verdana', color='#343434', ha='center', fontsize=15, fontweight='demibold')
     plt.subplots_adjust(bottom=0.02, left=0.1) 
-    plt.savefig(user_top5_path)
+    plt.savefig(user_top5_path, facecolor="#f6f6f6", edgecolor='none')
     plt.close()
 
 
 def recommended_actions():
-    return None
+    {''}

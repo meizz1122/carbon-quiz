@@ -18,6 +18,7 @@ class Quiz_Question(models.Model):
     question_text = models.CharField(max_length=200)
     order = models.IntegerField(default=1)
     question_short = models.CharField(max_length=200)
+    recommended_action = models.TextField(default='None')
 
     def __str__(self):
         return self.question_text
