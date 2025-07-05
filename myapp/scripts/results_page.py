@@ -1,4 +1,5 @@
 from myapp.scripts.cluster_input import ClusteringModelManager
+from myapp.models import Quiz_Response, Quiz_Choice, Quiz_Question, Quiz_User
 import pandas as pd
 import numpy as np
 from scipy.stats import percentileofscore
@@ -157,5 +158,35 @@ def generate_user_categories(session_id=None):
     plt.close()
 
 
-def recommended_actions():
-    {''}
+def recommended_actions(session_id=None):
+    my_cluster = ClusteringModelManager()
+    user_data = my_cluster.get_user_data(session_id=session_id)
+    user_data = user_data.drop(columns=columns_to_drop) 
+    user_data = user_data.reset_index(drop=True) 
+
+    user_total_emissions = user_data.sum(axis=1).values
+
+    row1 = user_data.iloc[0]
+    row1 = row1.sort_values(ascending=False)
+    top_5 = row1[:5]
+    labels=top_5.index.tolist()
+
+    special_recs = ['beef', 'lamb', 'oth_meat', 'dairy', 'flights']
+    results = []
+
+    for label in labels:
+        Question = Quiz_Question.objects.get(question_short=label)
+        rec = Question.recommended_action
+        if label in special_recs:
+            Response= Quiz_Response.objects.get(session_id=session_id, question=Question.pk)
+            Choice = Response.choice
+            choice_num = Choice.choice_num
+            percent = top_5.loc[label]/choice_num/user_total_emissions*100
+            results.append(f"{rec} {int(percent)}%")
+        else:
+            results.append(rec)
+            
+    return(results)
+
+
+
