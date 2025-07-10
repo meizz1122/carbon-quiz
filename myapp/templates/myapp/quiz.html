@@ -12,12 +12,18 @@
             display: flex;
             height: 100vh;
         }
+        .quiz-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh; /* Optional: full height layout */
+            box-sizing: border-box;
+        }
         .image-container {
-            width: 40%;
+            flex: 0 0 40%; /*acts like width:40%*/
             background:  url('{% static "myapp/Forest4.jpeg" %}') no-repeat center center/cover;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; /* Center text horizontally */
+            align-items: center; /* Center text vertically */
             text-align: center;
             font-size: 2em;
             font-weight: bold;
@@ -25,7 +31,7 @@
             color: rgba(250, 247, 247, 0.863);
         }
         .form-container {
-            width: 60%;
+            flex: 0 0 60%;   
             background-color: #e4e4dd; 
             display: flex;
             justify-content: center;
@@ -56,7 +62,7 @@
             background-color: #3d7c40;
         }
         .top-links {
-            position: fixed;
+            position: absolute;
             top: 10px;
             right: 20px;
             z-index: 1000;
@@ -72,6 +78,24 @@
         .hover-underline:hover {
             text-decoration: underline;
         }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                flex-wrap: wrap; /*If there’s not enough space, let the flex items wrap onto multiple lines*/
+                flex-direction: column;
+            }
+            .image-container {
+                flex: 1 1 auto;
+                max-width: 100%;
+                font-size: 1.5em;
+            }
+            .form-container {
+                flex: 1 1 auto;
+                max-width: 100%;
+                padding: 0;
+                padding-top: 0;  
+            }
+        }
     </style>
 </head>
 <body>
@@ -80,31 +104,34 @@
         <a href="{% url 'myapp:machine_learning' %}" class="hover-underline">Machine Learning</a>
     </div>
 
-    <div class="image-container">
-        Carbon Footprint Quiz
-    </div>
+    <div class="quiz-container">
+        <div class="image-container">
+            Carbon Footprint Quiz
+        </div>
 
-    <div class="form-container">
-        <!--sends data to submit_choice URL name when a button is clicked/post actioned-->
-        <form id="choiceForm" action="{% url 'myapp:submit_choice' %}" method="post">
-            {% csrf_token %}
-            <p>{{ question.question_text }}</p>
+        <div class="form-container">
+            <!--sends data to submit_choice URL name when a button is clicked/post actioned-->
+            <form id="choiceForm" action="{% url 'myapp:submit_choice' %}" method="post">
+                {% csrf_token %}
+                <p>{{ question.question_text }}</p>
+                
+                    <div class="options-container"> 
+                        {% for choice in question.quiz_choice_set.all %}
+                            <button type="button" class="option" onclick="submitChoice({{ choice.id }}, {{ question.id }}, '{{ session_id }}')">
+                                {{ choice.choice_text }}
+                            </button>
+                        {% endfor %}
+                    </div>
             
-                <div class="options-container"> 
-                    {% for choice in question.quiz_choice_set.all %}
-                        <button type="button" class="option" onclick="submitChoice({{ choice.id }}, {{ question.id }}, '{{ session_id }}')">
-                            {{ choice.choice_text }}
-                        </button>
-                    {% endfor %}
-                </div>
-        
-            <!--hidden input to store the selected choice. When a form is submitted, only form inputs like <input> are sent to django--> 
-            <!-- the name here is for request.POST['choice'] -->
-            <input type="hidden" name="choice_id" id="selectedChoice">
-            <input type="hidden" name="question_id" id="selectedQuestion">
-            <input type="hidden" name="session_id" id="sessionId">
-        </form>
-    </div> 
+                <!--hidden input to store the selected choice. When a form is submitted, only form inputs like <input> are sent to django--> 
+                <!-- the name here is for request.POST['choice'] -->
+                <input type="hidden" name="choice_id" id="selectedChoice">
+                <input type="hidden" name="question_id" id="selectedQuestion">
+                <input type="hidden" name="session_id" id="sessionId">
+            </form>
+        </div> 
+    </div>
+    
     <script>
         //when the user clicks a button, JavaScript retrieves the stored choiceID here then submits the form to django
         function submitChoice(choiceId, questionId, sessionId) {

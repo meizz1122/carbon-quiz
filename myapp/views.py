@@ -87,18 +87,15 @@ def quiz_submit(request):
 def quiz_thanks(request, session_id=None):   
     session_id = request.session['session_id']
 
-    # my_cluster = ClusteringModelManager()
-    # total_em = my_cluster.get_user_emission(session_id=session_id)
-    # user_cluster = my_cluster.get_user_cluster(session_id=session_id)
-
-    # return render(request, "myapp/quiz_thanks.html", {'total_emission':total_em, 'user_cluster': user_cluster})
+    my_cluster = ClusteringModelManager()
+    user_cluster = my_cluster.get_user_cluster(session_id=session_id)
 
     user_percentile, user_grade = rp.generate_percentile_grade(session_id=session_id)
     rp.generate_similar_subgroup(session_id=session_id)
     rp.generate_user_categories(session_id=session_id)
     recs = rp.recommended_actions(session_id=session_id)
 
-    return render(request, "myapp/quiz_thanks.html", {'user_percentile': user_percentile, 'user_grade': user_grade, 'recs': recs})
+    return render(request, "myapp/quiz_thanks.html", {'user_percentile': user_percentile, 'user_grade': user_grade, 'recs': recs, 'user_cluster': user_cluster})
 
 
 

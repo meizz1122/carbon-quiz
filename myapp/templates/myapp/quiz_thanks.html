@@ -9,20 +9,70 @@
     <style>
         .body {
             margin: 0;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            display: flex;
-            height: 100vh;
-            background-color:white;
+            font-family: Verdana, Tahoma, sans-serif;
+            background-color:#f9f9f9;
+            color: #4d4a4a
         }
         .thanks-message {
-            font-size: 1.5em;
+            text-align: center;
+            padding: 1rem;
+            /* margin-bottom: 40px; */
+        }
+        .thanks-message h1 {
+            font-size: 2rem;
             font-weight: bold;
-            color: #144123af;
+            color: #333;
+        }
+        .charts-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .charts-row img {
+            width: 50%;
+            max-width: 550px;
+            height: auto;
+        }
+        .bottom-section {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: #eee;
+            padding: 30px;
+            border-radius: 8px;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .bottom-section img {
+            width: 45%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 8px;
+        }
+        .recommendations {
+            flex: 1;
+            min-width: 250px;
+        }
+        .recommendations h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .recommendations ol {
+            font-size: 1.2rem;
+            padding-left: 20px;
+        }
+        .recommendations li {
+            margin-bottom: 20px;
         }
         .top-links {
-            position: fixed;
+            position: absolute;
             top: 10px;
             right: 20px;
+        }
+        .cluster-info {
+            max-width: 100%;
         }
         .top-links a {
             font-family: 'lucida grande', Verdana, Geneva, Tahoma, sans-serif;
@@ -34,6 +84,33 @@
         }
         .hover-underline:hover {
             text-decoration: underline;
+        }        
+
+        @media (max-width: 768px) {
+            .thanks-message h1 {
+                font-size: 1.3rem;
+                justify-content: left;
+                margin-top: 2rem;
+                max-width: 100%;
+            }
+            .charts-row,
+            .bottom-section {
+                flex-direction: column;
+                align-items: center;
+            }
+            .charts-row img,
+            .bottom-section img {
+                width: 100%;
+            }
+            .recommendations {
+                width: 100%;
+            }
+            .recommendations h2 {
+                font-size: 1.2rem;
+            }
+            .recommendations li {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -44,16 +121,34 @@
     </div>
 
     <div class="thanks-message">
-        <h1>Thanks for submitting!</h1>
+        <h1>Thanks for submitting &#x1F389 &#x1F389 &#x1F389</h1>
+    </div>
+
+    <div class="charts-row">
         <!-- <p> Your Yearly Estimated Greenhouse Gas Emissions: {{total_emission | intcomma}} kg CO<sub>2</sub>-equivalent</p> -->
         <img src="{% static 'myapp/percentile.png' %}" alt="Percentile">
         <img src="{% static 'myapp/subgroups.png' %}" alt="Subgroups">
-        <img src="{% static 'myapp/top5.png' %}" alt="Top5">
-        <!-- <p></p>
-        <p> Your Predicted Cluster: {{user_cluster}} </p>
-        <p> Cluster Heatmap: </p>
-        <img src="{% static 'myapp/heatmap.png' %}" alt="Heatmap"> -->
-        <h2>Recommended actions for you:</h2>
-        <h2>Your predicted cluster (beta):</h2>
     </div>
+
+    <div class="bottom-section">
+        <img src="{% static 'myapp/top5.png' %}" alt="Top5">
+        
+        <div class="recommendations">
+        <h2>Recommended actions for you:</h2>
+        {% if recs %}
+            <ol>
+                {% for rec in recs %}
+                    <li>{{ rec }}</li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p>None.</p>
+        {% endif %}
+        </div>
+    </div>
+
+        <h2>(beta) Your predicted cluster: {{user_cluster}}</h2>
+        <p> Cluster Heatmap: </p>
+        <img src="{% static 'myapp/heatmap.png' %}" alt="Heatmap" class="cluster-info">
+
 </body>

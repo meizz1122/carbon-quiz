@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
     <title>Machine Learning Insights</title>
     <style>
         body {
              font-family: 'lucida grande', Verdana, Geneva, Tahoma, sans-serif;
              color: rgba(36, 35, 35, 0.7);
-             margin-top: 50px;
-             margin-left: 80px;
-             margin-right: 200px;
-             margin-bottom: 200px;
+        }
+        .text-container {
+            justify-content: center;
+            align-items: center;
+            margin-top: 50px;
+            margin-left: 80px;
+            margin-right: 200px;
+            margin-bottom: 200px;
         }
         .top-links {
-            position: fixed;
+            position: absolute;
             top: 10px;
             right: 20px;
         }
@@ -28,6 +34,16 @@
         .hover-underline:hover {
             text-decoration: underline;
         }
+
+        @media  (max-width: 768px) {
+            .text-container {
+                margin-top: 50px;
+                margin-left: 10px;
+                margin-right: 10px;
+                margin-bottom: 10px;
+                font-size: small;
+            }
+        }
     </style>
 </head>
 <body>
@@ -36,39 +52,42 @@
         <a href="{% url 'myapp:machine_learning' %}" class="hover-underline">Machine Learning</a>
     </div>
 
-    <h2>About this quiz</h2>
+    <div class="text-container">
+        <h2>About this quiz</h2>
 
-    <h4>1. Background</h4>
-    <p>About two-thirds of global greenhouse gas (GHG) emissions are linked to household consumption! As a result, for ordinary citizens, lifestyle changes are necessary to 
-        keep our planet from warming and for it to remain hospitable for us and future generations. That means preventing sea level rise, more frequent and severe weather events 
-        and the spread of infectious diseases. Some of these lifestyle changes will be automatic once businesses comply, such as for utility companies to use more renewable power 
-        generation. However, individual actions and choices also have a huge impact. Source: Brookings Institute.
-    </p>
-    <p>This quiz presents a simple way to look at individual impact and provides customized alternatives going forward.</p>
-    <h4>2. Assumptions</h4>
-    <p>Total emissions by activity is calculated based on what choice the user selects and assumptions related to activity/consumption level as written below:</p>
-    <p>Emission (kg CO<sub>2</sub>e/yr)= Choice x Assumption x Scale x Emission Factor</p>
-    <p>For example, for flights, total yearly emission is calculated by assuming that the average flight is the distance from NYC to San Francisco, person selects average 
-        of 4 flights per year, multiplied by the average emission factor per passenger mile for all seat classes (source: UK Govt Conversion Factors 2024) and a scale of 
-        1 since the data is already yearly.
-    </p>
-    <p>Click Here for a full list of assumptions.</p>
-    <h4>3. Data Sources</h4>
+        <h4>1. Background</h4>
+        <p>About two-thirds of global greenhouse gas (GHG) emissions are linked to household consumption! As a result, for ordinary citizens, lifestyle changes are necessary to 
+            keep our planet from warming and for it to remain hospitable for us and future generations. That means preventing sea level rise, more frequent and severe weather events 
+            and the spread of infectious diseases. Some of these lifestyle changes will be automatic once businesses comply, such as for utility companies to use more renewable power 
+            generation. However, individual actions and choices also have a huge impact. Source: Brookings Institute.
+        </p>
+        <p>This quiz presents a simple way to look at individual impact and provides customized alternatives going forward.</p>
+        <h4>2. Assumptions</h4>
+        <p>Total emissions by activity is calculated based on what choice the user selects and assumptions related to activity/consumption level as written below:</p>
+        <p>Emission (kg CO<sub>2</sub>e/yr)= Choice x Assumption x Scale x Emission Factor</p>
+        <p>For example, for flights, total yearly emission is calculated by assuming that the average flight is the distance from NYC to San Francisco, person selects average 
+            of 4 flights per year, multiplied by the average emission factor per passenger mile for all seat classes (source: UK Govt Conversion Factors 2024) and a scale of 
+            1 since the data is already yearly.
+        </p>
+        <p>Click Here for a full list of assumptions.</p>
+        <h4>3. Data Sources</h4>
 
-    <h4>3.1. What is an emission factor?</h4>
-    <p>
-        An emission factor (EF) is a coefficient that describes the rate at which a given activity releases greenhouse gases into the atmosphere.
-    </p>
-    <p> 
-        GHG emissions are often measured in CO<sub>2</sub>e (CO<sub>2</sub> equivalents) expressed in weight, normally kg (kilograms) or t (tonne/metric ton). This unit expresses 
-        the 100-year warming effect of a given amount of a GHG in comparison to that of CO<sub>2</sub>. In other words, for a given amount of any GHG, CO<sub>2</sub>e expresses 
-        the amount of CO<sub>2</sub> that would warm the atmosphere as much as the same amount of the gas in question, over a 100-year time-frame from the moment of release. 
-        For example, nitrous oxide (N<sub>2</sub>O) has a "100-year" warming effect 265-298 times more than CO<sub>2</sub>. 
-    </p>
-    <p>Source: Climatiq</p>
+        <h4>3.1. What is an emission factor?</h4>
+        <p>
+            An emission factor (EF) is a coefficient that describes the rate at which a given activity releases greenhouse gases into the atmosphere.
+        </p>
+        <p> 
+            GHG emissions are often measured in CO<sub>2</sub>e (CO<sub>2</sub> equivalents) expressed in weight, normally kg (kilograms) or t (tonne/metric ton). This unit expresses 
+            the 100-year warming effect of a given amount of a GHG in comparison to that of CO<sub>2</sub>. In other words, for a given amount of any GHG, CO<sub>2</sub>e expresses 
+            the amount of CO<sub>2</sub> that would warm the atmosphere as much as the same amount of the gas in question, over a 100-year time-frame from the moment of release. 
+            For example, nitrous oxide (N<sub>2</sub>O) has a "100-year" warming effect 265-298 times more than CO<sub>2</sub>. 
+        </p>
+        <p>Source: Climatiq</p>
 
-    <h4>3.2. Emission factors used for the quiz</h4>
-    <p>Various public sources are used as input for the quiz. These include mainly: UK Govt Conversion Factors 2024, Science magaine and various other academic journals.</p>
-    <p>Click Here for a full list of sources.</p>
+        <h4>3.2. Emission factors used for the quiz</h4>
+        <p>Various public sources are used as input for the quiz. These include mainly: UK Govt Conversion Factors 2024, Science magaine and various other academic journals.</p>
+        <p>Click Here for a full list of sources.</p>
+    </div>
+    
 </body>
 </html>
