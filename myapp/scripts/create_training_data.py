@@ -7,6 +7,7 @@ import numpy as np
 import uuid
 import random
 from sklearn.decomposition import PCA
+import pickle
 
 import matplotlib
 matplotlib.use('Agg')
@@ -38,6 +39,9 @@ range_n_clusters = [2, 3, 4, 5, 6]
 
 silhouette_paths = 'myapp/static/myapp/silhouette'
 PCA_heatmap_path = 'myapp/static/myapp/PCA_heatmap.png'
+model_path = 'myapp/ml_models/cluster_model.pkl'
+heatmap_path = 'myapp/static/myapp/heatmap.png'
+MinMaxScaler_path = 'myapp/ml_models/mmscaler.pkl' 
 
 columns_to_drop = ['car_type','age','location']
 
@@ -131,7 +135,7 @@ def silhouette():
         plt.savefig(silhouette_paths + str(n_clusters) + '.png')
 
 
-#interpret/validation after picking num of clusters
+#run/save model and scaler, interpret/validation after picking num of clusters
 def PCA_heatmap(n_clusters=4):
     my_cluster = ClusteringModelManager()
     X = my_cluster.get_cluster_data()
@@ -141,17 +145,37 @@ def PCA_heatmap(n_clusters=4):
     X = X.reset_index(drop=True) 
     mmscaler = MinMaxScaler()
     X_input = mmscaler.fit_transform(X)
+    #save scaler
+    with open(MinMaxScaler_path,'wb') as file:
+            pickle.dump(mmscaler,file)
 
     kmeans = KMeans(n_clusters=n_clusters,random_state=0)
     cluster_labels = kmeans.fit_predict(X_input)
     X['cluster_label'] = cluster_labels
 
+    #save ml model locally for loading in view later
+    filename = model_path
+    with open(filename,'wb') as file:
+        pickle.dump(kmeans,file)
+    
+    #separate heatmap
+    averages = X.groupby('cluster_label').mean()
+    averages_scaled = MinMaxScaler().fit_transform(averages)
+    plt.figure(figsize=(10, 6))
+    sns.heatmap(averages_scaled, annot=True, xticklabels=averages.columns.tolist() ,cmap='GnBu')
+    plt.xticks(rotation=45)
+    plt.title("Heatmap showing impact of each feature within cluster", loc='center')
+    plt.xlabel("Feature")
+    plt.ylabel("Cluster")
+    plt.subplots_adjust(bottom=0.3) 
+    plt.savefig(heatmap_path)
+    plt.close()
+
+    #CREATE CHARTS
     fig, (ax1, ax2) = plt.subplots(1,2, width_ratios=[2,1])
     fig.set_size_inches(20, 7)
 
     #HEATMAP
-    averages = X.groupby('cluster_label').mean()
-    averages_scaled = MinMaxScaler().fit_transform(averages)
     sns.heatmap(averages_scaled, annot=True, xticklabels=averages.columns.tolist() ,cmap='GnBu', ax=ax1)
     ax1.tick_params(axis='x', labelrotation=45)
     ax1.set_title("Heatmap showing impact of each feature within cluster")

@@ -60,15 +60,22 @@ def quiz_submit(request):
         
         else:
             user = Quiz_User.objects.get(session_id=session_id)
-
+        
         # print(f"User: {user.session_id}; Exists: {Quiz_User.objects.filter(session_id=session_id).exists()}; PK: {user.pk}")
-
+        
         selected_question = get_object_or_404(Quiz_Question, pk=question_id)
         selected_choice = get_object_or_404(Quiz_Choice, pk=choice_id)
         
         # print(f"Saving Response with user: {user}, question: {selected_question}, choice: {selected_choice}")
-        response = Quiz_Response(session_id=user, question=selected_question, choice=selected_choice)
-        response.save() 
+        answers_set = Quiz_Response.objects.filter(session_id=user, question=selected_question)
+        if answers_set.exists():
+            answers_set.delete()
+            response, created = Quiz_Response.objects.get_or_create(session_id=user, question=selected_question, choice=selected_choice)
+            response.save()
+
+        else:
+            response, created = Quiz_Response.objects.get_or_create(session_id=user, question=selected_question, choice=selected_choice)
+            response.save()
         
         #id__gt is id greater than
         current_order = getattr(selected_question, 'order')
@@ -81,7 +88,7 @@ def quiz_submit(request):
             #reverse() returns the URL from the URL name specified
             return HttpResponseRedirect(reverse('myapp:quiz_thanks')) 
      
-    return HttpResponseRedirect(reverse('myapp:quiz_thanks'))   
+    return HttpResponseRedirect(reverse('myapp:quiz_index'))   
 
 
 def quiz_thanks(request, session_id=None):   

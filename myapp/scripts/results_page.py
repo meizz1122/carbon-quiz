@@ -150,10 +150,11 @@ def generate_user_categories(session_id=None):
     
     colors = ['#F66D44', '#FEAE65', '#E6F69D', '#AADEA7', '#64C2A6', '#2D87BB']
 
-    fig, ax = plt.subplots(figsize=(5.5, 5))
+    fig, ax = plt.subplots(figsize=(6, 5))
     ax.pie(top_5, labels=top_5.index.tolist(), autopct='%1.0f%%', colors=colors, textprops={'color': '#343434', 'fontfamily':'Verdana'})
     ax.set_title('Your top 5 categories with the most impact', fontfamily='Verdana', color='#343434', ha='center', fontsize=15, fontweight='demibold')
-    plt.subplots_adjust(bottom=0.02, left=0.1) 
+    plt.subplots_adjust(bottom=0.02, left=0.1, right=0.9) 
+    plt.tight_layout()
     plt.savefig(user_top5_path, facecolor="#f6f6f6", edgecolor='none')
     plt.close()
 

@@ -28,6 +28,7 @@ class ClusteringModelManager:
         self.df = None
         self.columns_to_drop = ['car_type','age','location']
 
+
     #preprocess input data for model, retrieve all responses in database and pivot into one column per feature 
     #don't need self for static functions vs instance method
     def get_cluster_data(self):
@@ -48,6 +49,7 @@ class ClusteringModelManager:
 
         return df_pivot
 
+
     #retrieve single user data
     def get_user_data(self, session_id):
         # retrieve choices, sum, save to model?, return
@@ -67,6 +69,7 @@ class ClusteringModelManager:
         df = pd.pivot(df, index='session_id', columns='question_short_name', values='emission')
         return df
     
+
     #NOTE only for INDIVIDUAL user data, loads previously created minmaxscaler from train_model()
     def preprocess_user_data(self, df):
         #preprocess: remove session_id as first column, normalize
@@ -80,69 +83,7 @@ class ClusteringModelManager:
         df_input = loaded_scaler.transform(df_input)
 
         return df_input
-
-    #TODO: keep this? what to show in results page?
-    #train and save model locally, storing user labels back to Quiz_User
-    def train_model(self):
-        #preprocess
-        df = self.get_cluster_data()
-        df = pd.DataFrame(df)
-        df = df.drop(columns=self.columns_to_drop) 
-
-        #total by session_id
-        total = df.sum(axis=1)
-
-        #create and save scaler
-        df_input = df.reset_index(drop=True) #drop session_ids now
-        mmscaler = MinMaxScaler()
-        df_input = mmscaler.fit_transform(df_input)
-        with open(self.MinMaxScaler_path,'wb') as file:
-            pickle.dump(mmscaler,file)
-
-        # train model
-        kmeans = KMeans(n_clusters=4,random_state=0)
-        cluster_labels = kmeans.fit_predict(df_input)
-
-        df['cluster_label'] = cluster_labels
-        df['total_emission'] = total
-        # print(df.head)
-
-        # # NOT necessary?? save labels to Quiz_User model; 
-        # # TODO apparently iterrows() is very slow..suggestion later to use bulk_update
-        # for index, row in df.iterrows():
-        #     try:
-        #         # print(df.columns.tolist())
-        #         # print(df.index.name)
-        #         print()
-        #         user = Quiz_User.objects.get(pk=row.name)
-        #         user.cluster_label = int(row['cluster_label'])
-        #         user.total_emission = round(row['total_emission'])
-        #         user.save()
-        #         print(f"User {row.name} found and updated")
-        #     except Quiz_User.DoesNotExist:
-        #         print(f"User {row.name} not found.")
-        
-        #save ml model locally for loading in view later
-        filename = self.model_path
-        with open(filename,'wb') as file:
-            pickle.dump(kmeans,file)
-
-        #create and save heatmap 
-        df = df.drop(columns=['total_emission'])
-        averages = df.groupby('cluster_label').mean()
-        # print(averages)
-        averages_scaled = MinMaxScaler().fit_transform(averages)
-        plt.figure(figsize=(11, 6))
-        sns.heatmap(averages_scaled, annot=True, xticklabels=averages.columns.tolist() ,cmap='GnBu')
-        plt.xticks(rotation=45)
-        plt.xlabel("Feature")
-        plt.ylabel("Cluster")
-        # plt.rcParams["figure.figsize"] = (6,13)
-        plt.subplots_adjust(bottom=0.3) 
-        # plt.show()
-        plt.savefig(self.heatmap_path)
-        plt.close()
-
+    
 
     #not necessary to calc total emission during model training?! only need to calc/retrieve the current active user
     def get_user_emission(self, session_id):
