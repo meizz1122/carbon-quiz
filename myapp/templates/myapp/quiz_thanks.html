@@ -27,13 +27,15 @@
             display: flex;
             justify-content: center;
             gap: 30px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
+            /* align-items: flex-start; */
         }
         .charts-row img {
-            width: 50%;
+            flex: 1 1 45%; 
             max-width: 550px;
             height: auto;
+            object-fit: contain; /*somehow made images not squished*/
         }
         .bottom-section {
             display: flex;
