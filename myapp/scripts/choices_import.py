@@ -4,6 +4,7 @@
 import os
 from pathlib import Path
 
+
 def test1():
     BASE_DIR = Path(__file__).resolve().parent.parent
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
