@@ -3,9 +3,11 @@
 
 import os
 from pathlib import Path
+from django.conf import settings
 
 
 def test1():
-    BASE_DIR = Path(__file__).resolve().parent.parent
+    BASE_DIR = settings.BASE_DIR
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
+    print(BASE_DIR)
     print(STATIC_ROOT)

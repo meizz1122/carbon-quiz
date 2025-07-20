@@ -6,6 +6,8 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import MinMaxScaler, Normalizer
 import pickle
+import os
+from django.conf import settings
 
 import matplotlib
 matplotlib.use('Agg')
@@ -20,9 +22,12 @@ import matplotlib.pyplot as plt
 class ClusteringModelManager:
     def __init__(self):
         #TODO post deployment (GCP, Heroku etc) use self.model_path = os.path.join(settings.BASE_DIR, 'scripts', 'saved_model.pkl')
-        self.model_path = 'myapp/ml_models/cluster_model.pkl' # static path
-        self.heatmap_path = 'myapp/static/myapp/heatmap.png' # static path
-        self.MinMaxScaler_path = 'myapp/ml_models/mmscaler.pkl' # static path
+        # self.model_path = 'myapp/ml_models/cluster_model.pkl' # static path
+        # self.heatmap_path = 'myapp/static/myapp/heatmap.png' # static path
+        # self.MinMaxScaler_path = 'myapp/ml_models/mmscaler.pkl' # static path
+        self.model_path = os.path.join(settings.BASE_DIR, 'myapp', 'ml_models', 'cluster_model.pkl') 
+        self.heatmap_path = os.path.join(settings.BASE_DIR,'myapp',  'static', 'myapp', 'heatmap.png')
+        self.MinMaxScaler_path = os.path.join(settings.BASE_DIR, 'myapp', 'ml_models', 'mmscaler.pkl')
         self.model = None
         self.cluster_labels = None
         self.df = None

@@ -8,6 +8,8 @@ import uuid
 import random
 from sklearn.decomposition import PCA
 import pickle
+import os
+from django.conf import settings
 
 import matplotlib
 matplotlib.use('Agg')
@@ -37,11 +39,17 @@ weighted_choices = {
 range_n_clusters = [2, 3, 4, 5, 6]
 # range_n_clusters = [2]
 
-silhouette_paths = 'myapp/static/myapp/silhouette'
-PCA_heatmap_path = 'myapp/static/myapp/PCA_heatmap.png'
-model_path = 'myapp/ml_models/cluster_model.pkl'
-heatmap_path = 'myapp/static/myapp/heatmap.png'
-MinMaxScaler_path = 'myapp/ml_models/mmscaler.pkl' 
+# silhouette_paths = 'myapp/static/myapp/silhouette'
+# PCA_heatmap_path = 'myapp/static/myapp/PCA_heatmap.png'
+# model_path = 'myapp/ml_models/cluster_model.pkl'
+# heatmap_path = 'myapp/static/myapp/heatmap.png'
+# MinMaxScaler_path = 'myapp/ml_models/mmscaler.pkl' 
+
+silhouette_paths = os.path.join(settings.BASE_DIR, 'myapp', 'static','myapp', 'silhouette') 
+PCA_heatmap_path = os.path.join(settings.BASE_DIR, 'myapp', 'static', 'myapp', 'PCA_heatmap.png')
+model_path = os.path.join(settings.BASE_DIR, 'myapp', 'ml_models', 'cluster_model.pkl') 
+heatmap_path = os.path.join(settings.BASE_DIR, 'myapp', 'static', 'myapp', 'heatmap.png')
+MinMaxScaler_path = os.path.join(settings.BASE_DIR, 'myapp', 'ml_models', 'mmscaler.pkl')
 
 columns_to_drop = ['car_type','age','location']
 

@@ -4,15 +4,22 @@ import pandas as pd
 import numpy as np
 from scipy.stats import percentileofscore
 from math import ceil
+import os
+from django.conf import settings
 
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 
-percentile_path = 'myapp/static/myapp/percentile.png'
-subgroups_path = 'myapp/static/myapp/subgroups.png'
-user_top5_path = 'myapp/static/myapp/top5.png'
+# percentile_path = 'myapp/static/myapp/percentile.png'
+# subgroups_path = 'myapp/static/myapp/subgroups.png'
+# user_top5_path = 'myapp/static/myapp/top5.png'
+
+percentile_path = os.path.join(settings.BASE_DIR, 'myapp', 'static', 'myapp', 'percentile.png') 
+subgroups_path = os.path.join(settings.BASE_DIR, 'myapp', 'static', 'myapp', 'subgroups.png')
+user_top5_path = os.path.join(settings.BASE_DIR, 'myapp', 'static', 'myapp', 'top5.png')
+
 columns_to_drop = ['car_type','age','location']
 
 
@@ -167,6 +174,9 @@ def recommended_actions(session_id=None):
 
     user_total_emissions = user_data.sum(axis=1).values
 
+    if user_total_emissions == 0:
+        user_total_emissions = 1
+
     row1 = user_data.iloc[0]
     row1 = row1.sort_values(ascending=False)
     top_5 = row1[:5]
@@ -176,16 +186,20 @@ def recommended_actions(session_id=None):
     results = []
 
     for label in labels:
-        Question = Quiz_Question.objects.get(question_short=label)
-        rec = Question.recommended_action
-        if label in special_recs:
-            Response= Quiz_Response.objects.get(session_id=session_id, question=Question.pk)
-            Choice = Response.choice
-            choice_num = Choice.choice_num
-            percent = ceil(top_5.loc[label]/choice_num/user_total_emissions*100)
-            results.append(f"{rec} {int(percent)}%")
+        cat_emission = top_5.loc[label]
+        if cat_emission != 0:
+            Question = Quiz_Question.objects.get(question_short=label)
+            rec = Question.recommended_action
+            if label in special_recs:
+                Response= Quiz_Response.objects.get(session_id=session_id, question=Question.pk)
+                Choice = Response.choice
+                choice_num = Choice.choice_num
+                percent = ceil(cat_emission/choice_num/user_total_emissions*100)
+                results.append(f"{rec} {int(percent)}%")
+            else:
+                results.append(rec)
         else:
-            results.append(rec)
+            break
             
     return(results)
 
