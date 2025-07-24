@@ -128,12 +128,12 @@
 
     <div class="charts-row">
         <!-- <p> Your Yearly Estimated Greenhouse Gas Emissions: {{total_emission | intcomma}} kg CO<sub>2</sub>-equivalent</p> -->
-        <img src="{% static 'myapp/percentile.png' %}" alt="Percentile">
-        <img src="{% static 'myapp/subgroups.png' %}" alt="Subgroups">
+        <img src="{% url 'myapp:serve_chart' 'percentile.png' %}" alt="Percentile">
+        <img src="{% url 'myapp:serve_chart' 'subgroups.png' %}" alt="Subgroups">
     </div>
 
     <div class="bottom-section">
-        <img src="{% static 'myapp/top5.png' %}" alt="Top5">
+        <img src="{% url 'myapp:serve_chart' 'top5.png' %}" alt="Top5">
         
         <div class="recommendations">
         <h2>Recommended actions for you:</h2>

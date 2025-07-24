@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 import uuid
 
 from django.db.models import F
@@ -8,6 +8,10 @@ from django.urls import reverse
 from .models import Quiz_Question, Quiz_Choice, Quiz_User, Quiz_Response
 from myapp.scripts.cluster_input import ClusteringModelManager
 import myapp.scripts.results_page as rp
+
+from django.http import FileResponse
+import os
+import tempfile
 
 #A view is a “type” of web page in your Django application that generally serves a specific function and has a specific template
 #views return HttpResponse
@@ -68,7 +72,7 @@ def quiz_submit(request):
         
         # print(f"Saving Response with user: {user}, question: {selected_question}, choice: {selected_choice}")
         answers_set = Quiz_Response.objects.filter(session_id=user, question=selected_question)
-        if answers_set.exists():
+        if answers_set.exists(): 
             answers_set.delete()
             response, created = Quiz_Response.objects.get_or_create(session_id=user, question=selected_question, choice=selected_choice)
             response.save()
@@ -102,8 +106,11 @@ def quiz_thanks(request, session_id=None):
     rp.generate_user_categories(session_id=session_id)
     recs = rp.recommended_actions(session_id=session_id)
 
-    return render(request, "myapp/quiz_thanks.html", {'user_percentile': user_percentile, 'user_grade': user_grade, 'recs': recs, 'user_cluster': user_cluster})
-
+    return render(request, "myapp/quiz_thanks.html", {
+        'user_percentile': user_percentile, 
+        'user_grade': user_grade, 
+        'recs': recs, 
+        'user_cluster': user_cluster})
 
 
 def ML_view(request):
@@ -112,3 +119,13 @@ def ML_view(request):
 
 def about_view(request):
     return render(request, "myapp/about.html")
+ 
+
+def serve_chart(request, filename):
+    allowed = ['percentile.png', 'subgroups.png', 'top5.png']
+    
+    if filename not in allowed:
+        return HttpResponseNotFound()
+
+    tmp_path = os.path.join(tempfile.gettempdir(), filename)
+    return FileResponse(open(tmp_path, 'rb'), content_type='image/png')

@@ -11,14 +11,12 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+import os
+import tempfile
 
-# percentile_path = 'myapp/static/myapp/percentile.png'
-# subgroups_path = 'myapp/static/myapp/subgroups.png'
-# user_top5_path = 'myapp/static/myapp/top5.png'
-
-percentile_path = os.path.join(settings.BASE_DIR, 'myapp', 'static', 'myapp', 'percentile.png') 
-subgroups_path = os.path.join(settings.BASE_DIR, 'myapp', 'static', 'myapp', 'subgroups.png')
-user_top5_path = os.path.join(settings.BASE_DIR, 'myapp', 'static', 'myapp', 'top5.png')
+percentile_path = os.path.join(tempfile.gettempdir(), 'percentile.png') 
+subgroups_path =  os.path.join(tempfile.gettempdir(), 'subgroups.png') 
+user_top5_path = os.path.join(tempfile.gettempdir(), 'top5.png') 
 
 columns_to_drop = ['car_type','age','location']
 
