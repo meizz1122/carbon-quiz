@@ -145,6 +145,10 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') #single folder where Django collects static files when run collectstatic
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' #URL prefix for static files in the browser. 
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'myapp', 'static'),  # <- where you put your custom CSS/JS/images
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
