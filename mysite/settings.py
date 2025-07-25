@@ -104,9 +104,6 @@ DATABASES = {
     )
 }
 
-DATABASES['default']['OPTIONS'] = DATABASES['default'].get('OPTIONS', {})
-DATABASES['default']['OPTIONS']['sslmode'] = 'require'
-
 if 'DATABASE_URL' in os.environ:
     DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
