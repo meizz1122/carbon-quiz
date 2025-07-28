@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 #     }
 # }
 
-#Heroku provides a free Postgres database (called heroku-postgresql:hobby-dev) by default when you deploy
+#paid for Heroku postgres essential 0 plan
 #local default to sqlite
 #Heroku parses the postgres database URL from an environment variable (provided by Heroku) using the dj-database-url package
 DATABASES = {
@@ -141,9 +141,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'static/' #URL prefix for static files in the browser.
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') #single folder where Django collects static files when run collectstatic
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' #URL prefix for static files in the browser. 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'myapp', 'static'),  # <- where you put your custom CSS/JS/images
