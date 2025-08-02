@@ -1,2 +1,0 @@
-username: admin-Django
-password: Masters2020!
