@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 
 ## python manage.py shell
 ## from myapp.scripts.cluster_input import ClusteringModelManager
+## from importlib import reload
 ## my_cluster = ClusteringModelManager()
 ## my_cluster.get_emission('1ce97cab-bf74-40bb-a9fd-24d86affafef')
 

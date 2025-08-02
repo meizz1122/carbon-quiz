@@ -152,7 +152,11 @@ def generate_user_categories(session_id=None):
     row1 = row1.sort_values(ascending=False)
     top_5 = row1[:5]
     top_5['other'] = row1[5:].sum()
-    
+ 
+    #bug fix: remove any negative values for pie chart for 'Wedge size x must be non-negative'
+    mask = top_5 < 0 
+    top_5[mask] = 0
+
     colors = ['#F66D44', '#FEAE65', '#E6F69D', '#AADEA7', '#64C2A6', '#2D87BB']
 
     fig, ax = plt.subplots(figsize=(6, 5))
