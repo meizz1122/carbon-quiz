@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
     <title>Carbon Footprint Quiz</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
     <style>
         body {
             margin: 0;
-            font-family: Simplon Norm, Helvetica Neue, Helvetica, sans-serif;
             display: flex;
             height: 100vh;
         }
@@ -32,6 +36,9 @@
             font-weight: bold;
             opacity: .95;
             color: rgba(250, 247, 247, 0.863);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3em;
+            letter-spacing: 1px;
         }
         .form-container {
             flex: 0 0 60%;   
@@ -45,6 +52,7 @@
             color: rgba(49, 48, 48, 0.7);
             font-weight: bold;
             font-size: 16px;
+            font-family: 'Simplon Norm', 'Helvetica Neue', Helvetica, sans-serif;
         }
         .options-container {
             display: flex;
@@ -92,7 +100,7 @@
             .image-container {
                 flex: 1 1 auto;
                 max-width: 100%;
-                font-size: 1.5em;
+                font-size: 2em;
             }
             .form-container {
                 flex: 1 1 auto;
