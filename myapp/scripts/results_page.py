@@ -132,7 +132,7 @@ def generate_similar_subgroup(session_id=None):
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False) 
     # ax.spines['left'].set_visible(False)
-    plt.subplots_adjust(top=0.75, left=0.2) 
+    plt.subplots_adjust(top=0.75, left=0.15) 
 
     plt.figtext(0.05, 0.9, s=f"Here's how you ", fontfamily='Verdana', color='#343434', fontweight='normal', fontsize=18)
     plt.figtext(0.37, 0.9, s=f"compare", fontfamily='Verdana', color='#45b5c3', fontweight='bold', fontsize=19)
