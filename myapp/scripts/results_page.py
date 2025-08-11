@@ -3,7 +3,7 @@ from myapp.models import Quiz_Response, Quiz_Choice, Quiz_Question, Quiz_User
 import pandas as pd
 import numpy as np
 from scipy.stats import percentileofscore
-from math import ceil
+from math import ceil, isnan
 import os
 from django.conf import settings
 
@@ -154,18 +154,22 @@ def generate_user_categories(session_id=None):
     top_5['other'] = row1[5:].sum()
  
     #bug fix: remove any negative values for pie chart for 'Wedge size x must be non-negative'
-    mask = top_5 < 0 
+    mask = (top_5 < 0 )
     top_5[mask] = 0
-
     colors = ['#F66D44', '#FEAE65', '#E6F69D', '#AADEA7', '#64C2A6', '#2D87BB']
 
     fig, ax = plt.subplots(figsize=(6, 5))
-    ax.pie(top_5, labels=top_5.index.tolist(), autopct='%1.0f%%', colors=colors, textprops={'color': '#343434', 'fontfamily':'Verdana'})
-    ax.set_title('Your top 5 categories with the most impact', fontfamily='Verdana', color='#343434', ha='center', fontsize=15, fontweight='demibold')
-    plt.subplots_adjust(bottom=0.02, left=0.1, right=0.9) 
-    plt.tight_layout()
-    plt.savefig(user_top5_path, facecolor="#f6f6f6", edgecolor='none')
-    plt.close()
+    if top_5.sum() == 0:
+        ax.set_title('Your top 5 categories with the most impact', fontfamily='Verdana', color='#343434', ha='center', fontsize=15, fontweight='demibold')
+        plt.savefig(user_top5_path, facecolor="#f6f6f6", edgecolor='none')
+        plt.close()
+    else:
+        ax.pie(top_5, labels=top_5.index.tolist(), autopct='%1.0f%%', colors=colors, textprops={'color': '#343434', 'fontfamily':'Verdana'})
+        ax.set_title('Your top 5 categories with the most impact', fontfamily='Verdana', color='#343434', ha='center', fontsize=15, fontweight='demibold')
+        plt.subplots_adjust(bottom=0.02, left=0.1, right=0.9) 
+        plt.tight_layout()
+        plt.savefig(user_top5_path, facecolor="#f6f6f6", edgecolor='none')
+        plt.close()
 
 
 def recommended_actions(session_id=None):
@@ -176,7 +180,7 @@ def recommended_actions(session_id=None):
 
     user_total_emissions = user_data.sum(axis=1).values
 
-    if user_total_emissions == 0:
+    if user_total_emissions == 0 or user_total_emissions < 0 or isnan(user_total_emissions):
         user_total_emissions = 1
 
     row1 = user_data.iloc[0]
